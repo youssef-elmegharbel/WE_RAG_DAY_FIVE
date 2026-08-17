@@ -1,0 +1,33 @@
+# Source textbook — copyrighted, must not be redistributed
+Textbook/
+*.pdf
+
+# Built vector index and derived data
+data/
+
+# Design docs and specs — kept local
+docs/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# Editors & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
