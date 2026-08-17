@@ -5,6 +5,9 @@ Textbook/
 # Built vector index and derived data
 data/
 
+# Design docs and specs — kept local
+docs/
+
 # Secrets
 .env
 .env.*
