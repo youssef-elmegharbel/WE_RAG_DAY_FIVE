@@ -75,3 +75,120 @@ def detect_heading(text: str, size: float, font: str) -> tuple[str, str, str] | 
 def parse_page_dict(page_dict: dict) -> ParsedPage:
     """Placeholder for parse_page_dict - will be implemented in Task 3."""
     pass
+
+
+CHAPTER_NUMBER_SIZE = 59.8
+CHAPTER_TITLE_SIZE = 26.9
+CHAPTER_NUMBER_RE = re.compile(r"^(?:CHAPTER\s+)?(\d+)$", re.IGNORECASE)
+
+
+def detect_chapter_start(lines: list[tuple[str, float, str]]) -> tuple[int, str] | None:
+    """Return (chapter_number, title) when the page opens a chapter.
+
+    A chapter-start page carries a ~59.8pt line giving the chapter number
+    (either "CHAPTER N" joined on one line, or a bare "N", depending on how
+    the PDF's spans happen to be grouped), immediately followed by the
+    chapter title at ~26.9pt (possibly wrapped across multiple lines, as with
+    two-line appendix titles). "APPENDIX" pages use the same 59.8pt styling
+    but are excluded here since they are not numbered chapters.
+    """
+    number: int | None = None
+    number_idx: int | None = None
+    for idx, (text, size, _) in enumerate(lines):
+        if abs(size - CHAPTER_NUMBER_SIZE) < 1.0:
+            match = CHAPTER_NUMBER_RE.match(text.strip())
+            if match:
+                number = int(match.group(1))
+                number_idx = idx
+                break
+    if number is None:
+        return None
+
+    title_parts: list[str] = []
+    for text, size, _ in lines[number_idx + 1 :]:
+        if abs(size - CHAPTER_TITLE_SIZE) < SIZE_TOLERANCE:
+            title_parts.append(text.strip())
+        elif title_parts:
+            break
+        else:
+            break
+    if not title_parts:
+        return None
+    title = " ".join(title_parts)
+    if not CHAPTER_TITLE_RE.match(title):
+        return None
+    return (number, title)
+
+
+def printed_page_from_lines(lines: list[tuple[str, float, str]]) -> int | None:
+    """Read the printed page number, which appears as a bare number in the header."""
+    for text, _, _ in lines[:3]:
+        stripped = text.strip()
+        if stripped.isdigit() and len(stripped) <= 4:
+            return int(stripped)
+    return None
+
+
+def detect_page_offset(doc: "pymupdf.Document") -> int:
+    """Discover the offset between PDF index and printed page number.
+
+    Uses the median of all pages where a printed number is visible, so a few
+    misreads cannot skew the result.
+    """
+    offsets: list[int] = []
+    for index in range(min(doc.page_count, 400)):
+        lines = line_texts(doc[index].get_text("dict"))
+        printed = printed_page_from_lines(lines)
+        if printed is not None and printed > 0:
+            offsets.append(index - printed)
+    if not offsets:
+        raise ValueError("Could not determine printed-page offset; no page numbers found.")
+    offsets.sort()
+    return offsets[len(offsets) // 2]
+
+
+def parse_pdf(pdf_path: Path) -> list[ParsedPage]:
+    """Parse the whole book, carrying chapter and section state across pages."""
+    doc = pymupdf.open(pdf_path)
+    offset = detect_page_offset(doc)
+
+    pages: list[ParsedPage] = []
+    chapter_num: int | None = None
+    chapter_title: str | None = None
+    section: str | None = None
+    section_title: str | None = None
+
+    for index in range(doc.page_count):
+        page = doc[index]
+        lines = line_texts(page.get_text("dict"))
+        if not lines:
+            continue
+
+        chapter = detect_chapter_start(lines)
+        if chapter is not None:
+            chapter_num, chapter_title = chapter
+            section, section_title = None, None
+
+        for text, size, font in lines:
+            heading = detect_heading(text, size, font)
+            if heading is not None:
+                _, section, section_title = heading
+
+        text = page.get_text().strip()
+        if not text:
+            continue
+
+        pages.append(
+            ParsedPage(
+                text=text,
+                pdf_index=index,
+                printed_page=index - offset,
+                chapter_num=chapter_num,
+                chapter_title=chapter_title,
+                section=section,
+                section_title=section_title,
+            )
+        )
+
+    doc.close()
+    return pages
