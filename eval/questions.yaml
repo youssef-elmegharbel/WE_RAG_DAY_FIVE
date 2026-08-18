@@ -1,0 +1,44 @@
+- question: What is depth-first search?
+  expected_chapter: 3
+- question: How does A* search guarantee optimality?
+  expected_chapter: 3
+- question: What is a rational agent?
+  expected_chapter: 2
+- question: What is the PEAS framework?
+  expected_chapter: 2
+- question: What is minimax search in game playing?
+  expected_chapter: 5
+- question: How does alpha-beta pruning improve minimax?
+  expected_chapter: 5
+- question: What is a constraint satisfaction problem?
+  expected_chapter: 6
+- question: What is arc consistency?
+  expected_chapter: 6
+- question: What is modus ponens in propositional logic?
+  expected_chapter: 7
+- question: What is the resolution inference rule?
+  expected_chapter: 7
+- question: What is first-order logic quantification?
+  expected_chapter: 8
+- question: What is unification in first-order inference?
+  expected_chapter: 9
+- question: What is a Bayesian network?
+  expected_chapter: 13
+- question: What is conditional independence?
+  expected_chapter: 12
+- question: What is a Markov decision process?
+  expected_chapter: 17
+- question: What is Q-learning?
+  expected_chapter: 22
+- question: What is overfitting in machine learning?
+  expected_chapter: 19
+- question: What is a decision tree learning algorithm?
+  expected_chapter: 19
+- question: What are the layers in a convolutional neural network?
+  expected_chapter: 21
+- question: How do you make sourdough bread?
+  expected_chapter: null
+- question: What is the current price of Bitcoin?
+  expected_chapter: null
+- question: Who won the 2024 UEFA European Championship?
+  expected_chapter: null
