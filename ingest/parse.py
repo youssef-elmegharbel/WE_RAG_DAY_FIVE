@@ -6,7 +6,8 @@ analysis. Verified characteristics of this book:
   - body text            10.9pt
   - section headings     14.3pt, font CMSSBX10, numbered "N.M"
   - subsection headings  12.0pt, font CMSSBX10, numbered "N.M.K"
-  - chapter start pages  contain a 26.0pt "CHAPTER" span and a 59.8pt number
+  - chapter start pages  contain a ~59.8pt joined line "CHAPTER N" (font NimbusSanL-ReguCond),
+                         followed by the chapter title at 26.9pt
 
 PyMuPDF returns heading text as word-level spans, so spans must be joined per
 line before any pattern matching.
