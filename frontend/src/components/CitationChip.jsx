@@ -17,7 +17,7 @@ export default function CitationChip({ citation }) {
           <div className="citation-title">
             {citation.section} {citation.section_title}
           </div>
-          <p>{citation.snippet}…</p>
+          <p>{citation.snippet}{citation.snippet.length >= 400 ? '…' : ''}</p>
         </div>
       )}
     </div>

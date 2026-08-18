@@ -68,6 +68,21 @@ def test_retrieved_context_is_passed_into_the_prompt(monkeypatch):
     assert "Ch. 3.4, p. 84" in llm.last_prompt
 
 
+def test_get_llm_is_never_called_when_nothing_is_retrieved(monkeypatch):
+    """Regression: llm construction must happen after the empty-chunks check."""
+    monkeypatch.setattr("rag.chain.retrieve", lambda q, **kw: [])
+
+    def explode(*args, **kwargs):
+        raise AssertionError("get_llm should not be called when there are no chunks")
+
+    monkeypatch.setattr("rag.chain.get_llm", explode)
+
+    result = answer_question("What is the capital of France?")
+
+    assert result.answer == NO_ANSWER_TEXT
+    assert result.citations == []
+
+
 def test_uses_rewritten_query_for_retrieval(monkeypatch):
     seen = {}
 

@@ -43,11 +43,17 @@ def get_store() -> Chroma:
             f"No index at {settings.index_dir}. "
             "Build it first with: python -m ingest.build_index"
         )
-    return Chroma(
+    store = Chroma(
         collection_name=settings.collection_name,
         embedding_function=get_embeddings(),
         persist_directory=str(settings.index_dir),
     )
+    if store._collection.count() == 0:
+        raise IndexNotFoundError(
+            f"The index at {settings.index_dir} is empty. "
+            "Rebuild it with: python -m ingest.build_index"
+        )
+    return store
 
 
 def retrieve(

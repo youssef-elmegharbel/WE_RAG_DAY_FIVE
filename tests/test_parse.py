@@ -4,9 +4,8 @@ from ingest.parse import (
     ParsedPage,
     detect_heading,
     line_texts,
-    parse_page_dict,
 )
-from ingest.parse import detect_chapter_start, printed_page_from_lines
+from ingest.parse import detect_chapter_start, detect_page_offset, printed_page_from_lines
 
 
 def make_page_dict(lines):
@@ -91,3 +90,44 @@ def test_printed_page_from_lines_returns_none_when_absent():
     lines = [("Section 1.3", 10.0, "NimbusRomNo9L")]
 
     assert printed_page_from_lines(lines) is None
+
+
+class FakePage:
+    def __init__(self, page_dict):
+        self._page_dict = page_dict
+
+    def get_text(self, kind):
+        assert kind == "dict"
+        return self._page_dict
+
+
+class FakeDoc:
+    """Minimal stand-in for a pymupdf.Document, indexable and sized."""
+
+    def __init__(self, pages):
+        self._pages = [FakePage(p) for p in pages]
+        self.page_count = len(self._pages)
+
+    def __getitem__(self, index):
+        return self._pages[index]
+
+
+def test_detect_page_offset_uses_median_of_printed_numbers():
+    # PDF index 0 -> printed "1" (offset -1), index 1 -> printed "2" (offset -1),
+    # index 2 -> printed "50" (a misread outlier, offset -48). Median wins.
+    pages = [
+        make_page_dict([[("1", 10.0, "NimbusRomNo9L")]]),
+        make_page_dict([[("2", 10.0, "NimbusRomNo9L")]]),
+        make_page_dict([[("50", 10.0, "NimbusRomNo9L")]]),
+    ]
+    doc = FakeDoc(pages)
+
+    assert detect_page_offset(doc) == -1
+
+
+def test_detect_page_offset_raises_when_no_page_numbers_found():
+    pages = [make_page_dict([[("Section 1.3", 10.0, "NimbusRomNo9L")]])]
+    doc = FakeDoc(pages)
+
+    with pytest.raises(ValueError):
+        detect_page_offset(doc)

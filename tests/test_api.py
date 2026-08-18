@@ -81,6 +81,18 @@ def test_chat_maps_rate_limit_to_429(monkeypatch, client):
     assert "rate limit" in response.json()["detail"].lower()
 
 
+def test_chat_maps_auth_error_to_401(monkeypatch, client):
+    def explode(**kwargs):
+        raise RuntimeError("Invalid_api_key: the provided key is not valid")
+
+    monkeypatch.setattr("api.routes.answer_question", explode)
+
+    response = client.post("/chat", json={"message": "What is DFS?", "history": []})
+
+    assert response.status_code == 401
+    assert "api key" in response.json()["detail"].lower()
+
+
 def test_config_reports_active_provider(monkeypatch, client):
     monkeypatch.setenv("LLM_PROVIDER", "gemini")
     monkeypatch.setenv("LLM_MODEL", "gemini-2.0-flash")

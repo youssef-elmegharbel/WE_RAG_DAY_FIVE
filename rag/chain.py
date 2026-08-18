@@ -61,14 +61,13 @@ def answer_question(
 ) -> ChatResult:
     """Answer a question using only textbook content."""
     history = history or []
-    llm = llm or get_llm()
-
     query = rewrite_query(question, history, llm=llm)
     chunks = retrieve(query)
 
     if not chunks:
         return ChatResult(answer=NO_ANSWER_TEXT, citations=[], rewritten_query=query)
 
+    llm = llm or get_llm()
     prompt = ANSWER_PROMPT.format(context=format_context(chunks), question=question)
     answer = llm.invoke(prompt).content.strip()
 

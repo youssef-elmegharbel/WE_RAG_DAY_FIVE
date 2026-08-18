@@ -1,6 +1,6 @@
 import pytest
 
-from rag.retriever import RetrievedChunk, retrieve
+from rag.retriever import IndexNotFoundError, RetrievedChunk, get_store, retrieve
 from tests.conftest import FakeStore
 
 
@@ -30,6 +30,39 @@ def test_returns_empty_when_nothing_is_relevant(monkeypatch, make_doc):
     monkeypatch.setattr("rag.retriever.get_store", lambda: store)
 
     assert retrieve("what is the capital of France", k=5, threshold=0.35) == []
+
+
+class FakeCollection:
+    def __init__(self, count):
+        self._count = count
+
+    def count(self):
+        return self._count
+
+
+class FakeChromaStore:
+    """Stands in for langchain_chroma.Chroma, reporting document count."""
+
+    def __init__(self, count):
+        self._collection = FakeCollection(count)
+
+
+def test_get_store_raises_when_index_is_empty(monkeypatch, tmp_path):
+    get_store.cache_clear()
+    monkeypatch.setattr("rag.retriever.Chroma", lambda **kwargs: FakeChromaStore(0))
+
+    import dataclasses
+
+    from rag.config import get_settings as real_get_settings
+
+    fake_settings = dataclasses.replace(real_get_settings(), index_dir=tmp_path)
+    tmp_path.mkdir(exist_ok=True)
+    monkeypatch.setattr("rag.retriever.get_settings", lambda: fake_settings)
+
+    with pytest.raises(IndexNotFoundError):
+        get_store()
+
+    get_store.cache_clear()
 
 
 def test_citation_label_formats_chapter_section_and_page():

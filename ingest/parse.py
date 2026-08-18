@@ -73,11 +73,6 @@ def detect_heading(text: str, size: float, font: str) -> tuple[str, str, str] | 
     return ("section", match.group(1), match.group(2).strip())
 
 
-def parse_page_dict(page_dict: dict) -> ParsedPage:
-    """Placeholder for parse_page_dict - will be implemented in Task 3."""
-    pass
-
-
 CHAPTER_NUMBER_SIZE = 59.8
 CHAPTER_TITLE_SIZE = 26.9
 CHAPTER_NUMBER_RE = re.compile(r"^(?:CHAPTER\s+)?(\d+)$", re.IGNORECASE)

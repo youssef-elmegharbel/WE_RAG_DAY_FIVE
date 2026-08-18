@@ -57,6 +57,13 @@ def test_long_section_splits_into_multiple_chunks_with_overlap():
     assert len(chunks) > 1
     assert all(len(c.text) <= 500 for c in chunks)
 
+    # Overlap check: the tail of each chunk should reappear at the head of the
+    # next chunk, proving the splitter actually repeats content across the
+    # boundary rather than just cutting the text into disjoint pieces.
+    for first, second in zip(chunks, chunks[1:]):
+        tail = first.text[-50:].strip()
+        assert tail and tail in second.text
+
 
 def test_pages_without_chapter_are_skipped():
     """Front matter has no chapter and must not pollute the index."""

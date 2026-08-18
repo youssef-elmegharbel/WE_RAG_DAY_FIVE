@@ -9,12 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes import router
 
-logging.basicConfig(level=logging.INFO)
-
 DEV_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
 
 def create_app() -> FastAPI:
+    logging.basicConfig(level=logging.INFO)
     app = FastAPI(title="Textbook RAG", version="1.0.0")
     app.add_middleware(
         CORSMiddleware,
