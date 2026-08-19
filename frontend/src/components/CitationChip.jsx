@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
 
 export default function CitationChip({ citation }) {
   const [open, setOpen] = useState(false)
@@ -17,7 +20,11 @@ export default function CitationChip({ citation }) {
           <div className="citation-title">
             {citation.section} {citation.section_title}
           </div>
-          <p>{citation.snippet}{citation.snippet.length >= 400 ? '…' : ''}</p>
+          <div className="citation-body">
+            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+              {citation.snippet + (citation.snippet.length >= 400 ? '…' : '')}
+            </ReactMarkdown>
+          </div>
         </div>
       )}
     </div>

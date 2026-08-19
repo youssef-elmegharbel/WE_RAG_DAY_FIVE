@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import ChatInput from './components/ChatInput'
 import ChatMessage from './components/ChatMessage'
 import { fetchConfig, sendChat } from './api'
+import 'katex/dist/katex.min.css'
 import './styles.css'
 
 export default function App() {

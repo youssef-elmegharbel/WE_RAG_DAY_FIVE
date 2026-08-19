@@ -34,3 +34,4 @@ Thumbs.db
 
 # Local scratch / working notes
 .superpowers/
+*.log

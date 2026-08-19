@@ -33,10 +33,18 @@ body {
 .empty { color: var(--muted); text-align: center; margin-top: 15vh; }
 .empty .hint { font-size: 13px; opacity: 0.75; }
 
-.message { margin-bottom: 16px; padding: 12px 14px; border-radius: 10px; white-space: pre-wrap; }
+.message { margin-bottom: 16px; padding: 12px 14px; border-radius: 10px; }
 .message-user { background: var(--accent); color: #08111f; margin-left: 15%; }
 .message-assistant { background: var(--panel); border: 1px solid var(--border); margin-right: 10%; }
 .message-error { border-color: #7c3a3a; color: #ffb4b4; }
+
+.message-body > :first-child { margin-top: 0; }
+.message-body > :last-child { margin-bottom: 0; }
+.message-body ul, .message-body ol { padding-left: 1.3em; }
+.message-body code {
+  background: rgba(255, 255, 255, 0.08); border-radius: 4px; padding: 1px 4px;
+  font-size: 0.9em;
+}
 
 .citations { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .citation-chip {
@@ -50,6 +58,8 @@ body {
   background: #12151b; border-left: 2px solid var(--accent); border-radius: 6px;
 }
 .citation-title { color: var(--text); font-weight: 600; margin-bottom: 4px; }
+.citation-body > :first-child { margin-top: 0; }
+.citation-body > :last-child { margin-bottom: 0; }
 
 .chat-input { display: flex; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); }
 .chat-input input {

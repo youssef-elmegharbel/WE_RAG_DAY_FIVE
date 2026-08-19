@@ -1,3 +1,6 @@
+import ReactMarkdown from 'react-markdown'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
 import CitationChip from './CitationChip'
 
 export default function ChatMessage({ message }) {
@@ -5,7 +8,11 @@ export default function ChatMessage({ message }) {
 
   return (
     <div className={`message message-${role} ${error ? 'message-error' : ''}`}>
-      <div className="message-body">{content}</div>
+      <div className="message-body">
+        <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+          {content}
+        </ReactMarkdown>
+      </div>
       {citations.length > 0 && (
         <div className="citations">
           {citations.map((citation) => (
