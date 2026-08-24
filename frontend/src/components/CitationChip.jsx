@@ -17,6 +17,14 @@ export default function CitationChip({ citation }) {
       </button>
       {open && (
         <div className="citation-snippet">
+          <button
+            className="citation-close"
+            onClick={() => setOpen(false)}
+            aria-label="Close excerpt"
+            title="Close excerpt"
+          >
+            ×
+          </button>
           <div className="citation-title">
             {citation.section} {citation.section_title}
           </div>
